@@ -14,14 +14,14 @@ class ContactMethodFetcherContract(metaclass=ABCMeta):
     def get_testcase(self) -> TestCase:
         pass
 
-    def test_fetch_returns_contact_method_with_correct_email(self):
+    def test_call_returns_contact_method_with_correct_email(self):
         subject = self.get_subject(contact_method_type=ContactMethodType.EMAIL, value="ejemplo@example.com")
         test_case = self.get_testcase()
 
         contact_method = subject()
         test_case.assertEqual(contact_method.contact_method_type, ContactMethodType.EMAIL)
 
-    def test_fetch_returns_contact_method_with_correct_value(self):
+    def test_call_returns_contact_method_with_correct_value(self):
         subject = self.get_subject(contact_method_type=ContactMethodType.EMAIL, value="ejemplo@example.com")
         test_case = self.get_testcase()
 

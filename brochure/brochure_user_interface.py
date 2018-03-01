@@ -2,6 +2,7 @@ from abc import ABCMeta, abstractmethod
 from typing import Optional
 
 from brochure.values.basics import Basics
+from brochure.values.section import Section
 
 
 class BrochureUserInterface(metaclass=ABCMeta):
@@ -11,7 +12,7 @@ class BrochureUserInterface(metaclass=ABCMeta):
         pass  # pragma: no cover
 
     @abstractmethod
-    def show_basics(self, basics: Basics) -> None:
+    def show_cover(self, cover_section: Section, basics: Basics) -> None:
         pass  # pragma: no cover
 
     @abstractmethod

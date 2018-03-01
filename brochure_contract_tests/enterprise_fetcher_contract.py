@@ -13,7 +13,7 @@ class EnterpriseFetcherContract(metaclass=ABCMeta):
     def get_testcase(self) -> TestCase:
         pass
 
-    def test_fetch_returns_enterprise(self):
+    def test_call_returns_enterprise(self):
         subject = self.get_subject(name="Acme Inc.")
         test_case = self.get_testcase()
 
