@@ -1,10 +1,10 @@
 from collections import defaultdict
 from functools import partial
-from typing import Optional, Dict, Callable
+from typing import Optional
 
+from brochure.brochure_user_interface import BrochureUserInterface
 from brochure.commands.command_provider_interface import CommandProviderInterface
 from brochure.commands.command_types import CommandType
-from brochure.brochure_user_interface import BrochureUserInterface
 from brochure.value_fetchers.basics_fetcher import BasicsFetcher
 from brochure.value_fetchers.contact_method_fetcher_interface import ContactMethodFetcherInterface
 from brochure.value_fetchers.enterprise_fetcher_interface import EnterpriseFetcherInterface
@@ -29,9 +29,10 @@ class BrochureApplication(object):
         # noinspection PyBroadException
         try:
             command_type, command_parameters = command_provider()
-            domain_command_callable = self._bind(command_type=command_type,
-                                                 command_parameters=command_parameters)
-            domain_command_callable()
+            unbound_command_callable = self._command_map[command_type]
+            command_callable = partial(unbound_command_callable, **command_parameters)
+
+            command_callable()
         except Exception as e:
             self.show_exception(e)
 
@@ -57,8 +58,3 @@ class BrochureApplication(object):
             pass
 
         self._user_interface.show_unexpected_exception(exception=e, basics=basics)
-
-    def _bind(self, command_type: CommandType, command_parameters: Dict) -> Callable:
-        domain_command_callable = self._command_map[command_type]
-
-        return partial(domain_command_callable, **command_parameters)
