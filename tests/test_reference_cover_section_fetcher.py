@@ -2,7 +2,7 @@ from unittest import TestCase
 
 from brochure.value_fetchers.cover_section_fetcher_interface import CoverSectionFetcherInterface
 from brochure_contract_tests.cover_section_fetcher_contract import CoverSectionFetcherContract
-from tests.test_brochure_application import ReferenceCoverSectionFetcher
+from tests.brochure_application_test_case import ReferenceCoverSectionFetcher
 
 
 class TestReferenceCoverSectionFetcher(TestCase, CoverSectionFetcherContract):
