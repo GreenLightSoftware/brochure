@@ -16,5 +16,9 @@ class BrochureUserInterface(metaclass=ABCMeta):
         pass  # pragma: no cover
 
     @abstractmethod
+    def show_section(self, section: Section, basics: Basics) -> None:
+        pass  # pragma: no cover
+
+    @abstractmethod
     def show_unexpected_exception(self, exception: Exception, basics: Optional[Basics]) -> None:
         pass  # pragma: no cover

@@ -8,6 +8,7 @@ from brochure.values.enterprise import Enterprise
 from brochure.values.section import Section
 from brochure_reference_implementations.named_tuple_fetcher_provider import NamedTupleFetcherProvider
 from brochure_reference_implementations.reference_enterprise_fetcher import ReferenceEnterpriseFetcher
+from brochure_reference_implementations.reference_section_repository import ReferenceSectionRepository
 from brochure_reference_implementations.reference_user_interface import ReferenceUserInterface
 from tests.brochure_application_test_case import BrochureApplicationTestCase
 
@@ -17,13 +18,14 @@ ReferenceCoverSectionFetcher = NamedTupleFetcherProvider(named_tuple_type=Sectio
 class TestBrochureApplicationException(BrochureApplicationTestCase):
 
     def test_raising_exception_still_tries_to_show_basics_to_the_user_interface(self):
-        expected_cover_section = Section(title="Cover Section", body="Cover Section Body")
         expected_enterprise = Enterprise(name="Example Enterprise")
         expected_contact_method = ContactMethod(contact_method_type=ContactMethodType.EMAIL,
                                                 value="admin@example.com")
         subject, user_interface = self.get_subject(expected_enterprise=expected_enterprise,
                                                    expected_contact_method=expected_contact_method,
-                                                   expected_cover_section=expected_cover_section)
+                                                   expected_cover_section_title="Cover Section",
+                                                   expected_cover_section_body="Cover Section Body",
+                                                   expected_sections=[])
 
         # noinspection PyUnreachableCode
         def dummy() -> Tuple[CommandType, Dict]:
@@ -38,13 +40,14 @@ class TestBrochureApplicationException(BrochureApplicationTestCase):
                                                                      value="admin@example.com")))
 
     def test_raising_exception_shows_exception_to_the_user_interface(self):
-        expected_cover_section = Section(title="Cover Section", body="Cover Section Body")
         expected_enterprise = Enterprise(name="Example Enterprise")
         expected_contact_method = ContactMethod(contact_method_type=ContactMethodType.EMAIL,
                                                 value="admin@example.com")
         subject, user_interface = self.get_subject(expected_enterprise=expected_enterprise,
                                                    expected_contact_method=expected_contact_method,
-                                                   expected_cover_section=expected_cover_section)
+                                                   expected_cover_section_title="Cover Section",
+                                                   expected_cover_section_body="Cover Section Body",
+                                                   expected_sections=[])
 
         class MySpecialException(Exception):
             pass
@@ -67,12 +70,15 @@ class TestBrochureApplicationException(BrochureApplicationTestCase):
             # noinspection PyUnreachableCode
             return ContactMethod(contact_method_type=ContactMethodType.EMAIL, value="admin@example.com")
 
-        cover_section_fetcher = ReferenceCoverSectionFetcher({"title": "Cover Section"})
+        section_repository = ReferenceSectionRepository()
+        section_repository.create_cover_section(title="Cover Section",
+                                                body="Section Body")
+
         enterprise_fetcher = ReferenceEnterpriseFetcher({"name": "Example Enterprise"})
         user_interface = ReferenceUserInterface()
         application = BrochureApplication(contact_method_fetcher=contact_method_fetcher,
-                                          cover_section_fetcher=cover_section_fetcher,
-                                          enterprise_fetcher=enterprise_fetcher)
+                                          enterprise_fetcher=enterprise_fetcher,
+                                          section_repository=section_repository)
         application.register_user_interface(user_interface=user_interface)
 
         class MyCommandProviderException(Exception):

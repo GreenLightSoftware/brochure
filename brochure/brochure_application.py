@@ -7,18 +7,18 @@ from brochure.commands.command_provider_interface import CommandProviderInterfac
 from brochure.commands.command_types import CommandType
 from brochure.value_fetchers.basics_fetcher import BasicsFetcher
 from brochure.value_fetchers.contact_method_fetcher_interface import ContactMethodFetcherInterface
-from brochure.value_fetchers.cover_section_fetcher_interface import CoverSectionFetcherInterface
+from brochure.value_fetchers.section_repository_interface import SectionRepositoryInterface
 from brochure.value_fetchers.enterprise_fetcher_interface import EnterpriseFetcherInterface
 
 
 class BrochureApplication(object):
     def __init__(self,
                  contact_method_fetcher: ContactMethodFetcherInterface,
-                 cover_section_fetcher: CoverSectionFetcherInterface,
+                 section_repository: SectionRepositoryInterface,
                  enterprise_fetcher: EnterpriseFetcherInterface) -> None:
         super().__init__()
         self._enterprise_fetcher = enterprise_fetcher
-        self._cover_section_fetcher = cover_section_fetcher
+        self._section_repository = section_repository
         self._contact_method_fetcher = contact_method_fetcher
         self._user_interface = None
         self._basics_fetcher = BasicsFetcher(contact_methods_fetcher=self._contact_method_fetcher,
@@ -27,6 +27,7 @@ class BrochureApplication(object):
         self._command_map = defaultdict(lambda: self.show_unknown)
         self._command_map[CommandType.UNKNOWN] = self.show_unknown
         self._command_map[CommandType.SHOW_COVER] = self.show_cover
+        self._command_map[CommandType.SHOW_SECTION] = self.show_section
 
     def process_command(self, command_provider: CommandProviderInterface):
         # noinspection PyBroadException
@@ -46,8 +47,13 @@ class BrochureApplication(object):
 
     def show_cover(self):
         basics = self._basics_fetcher()
-        cover_section = self._cover_section_fetcher()
+        cover_section = self._section_repository.fetch_cover_section()
         self._user_interface.show_cover(cover_section=cover_section, basics=basics)
+
+    def show_section(self, identifier: int):
+        basics = self._basics_fetcher()
+        section = self._section_repository.fetch_section(identifier=identifier)
+        self._user_interface.show_section(section=section, basics=basics)
 
     def show_unknown(self):
         basics = self._basics_fetcher()
