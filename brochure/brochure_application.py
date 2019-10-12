@@ -17,12 +17,10 @@ class BrochureApplication(object):
                  section_repository: SectionRepositoryInterface,
                  enterprise_fetcher: EnterpriseFetcherInterface) -> None:
         super().__init__()
-        self._enterprise_fetcher = enterprise_fetcher
         self._section_repository = section_repository
-        self._contact_method_fetcher = contact_method_fetcher
         self._user_interface = None
-        self._basics_fetcher = BasicsFetcher(contact_methods_fetcher=self._contact_method_fetcher,
-                                             enterprise_fetcher=self._enterprise_fetcher)
+        self._basics_fetcher = BasicsFetcher(contact_methods_fetcher=contact_method_fetcher,
+                                             enterprise_fetcher=enterprise_fetcher)
 
         self._command_map = defaultdict(lambda: self.show_unknown)
         self._command_map[CommandType.UNKNOWN] = self.show_unknown
